@@ -14,6 +14,7 @@ export class TaskTableComponent implements OnInit, OnDestroy {
   tasks: Task[] = [];
 
   private topic = '/topic/notifications';
+  private subscriptionId = 'taskTableSubscription';
 
   constructor(private taskService: TaskService, private stompService: StompService) {
     this.refreshTable();
@@ -21,17 +22,17 @@ export class TaskTableComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.stompService.subscribe(this.topic, (message): void => {
-      console.log('ingreso');
       this.refreshTable();
       iziToast.info({
         title: 'Notification',
         message: message.body
       });
-    });
+    },
+    this.subscriptionId);
   }
 
   ngOnDestroy(): void {
-    this.stompService.unsubscribe(this.topic);
+    this.stompService.unsubscribe(this.subscriptionId);
   }
 
   private refreshTable(): void {

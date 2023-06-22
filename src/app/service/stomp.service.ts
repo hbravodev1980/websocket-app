@@ -13,27 +13,25 @@ export class StompService {
 
   constructor() { }
 
-  subscribe(topic: string, fn: (message: any) => void): void {
+  subscribe(topic: string, fn: (message: any) => void, subscriptionId: string): void {
     const connected = this.stompClient.connected;
 
     if (connected) {
-      this.subscribeToTopic(topic, fn);
+      this.subscribeToTopic(topic, fn, subscriptionId);
       return;
     }
 
     this.stompClient.connect({}, () => {
-      this.subscribeToTopic(topic, fn);
+      this.subscribeToTopic(topic, fn, subscriptionId);
     });
   }
 
-  private subscribeToTopic(topic: string, fn: (message: any) => void): void {
-    this.stompClient.subscribe(topic, (message) => {
-      fn(message);
-    });
+  private subscribeToTopic(topic: string, fn: (message: any) => void, subscriptionId: string): void {
+    this.stompClient.subscribe(topic, (message) => fn(message), { id: subscriptionId });
   }
 
-  public unsubscribe(topic: string): void {
-    this.stompClient.unsubscribe(topic);
+  public unsubscribe(subscriptionId: string): void {
+    this.stompClient.unsubscribe(subscriptionId);
   }
 
 }

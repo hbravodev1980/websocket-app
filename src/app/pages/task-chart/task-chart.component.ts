@@ -11,8 +11,9 @@ import iziToast from 'izitoast';
 })
 export class TaskChartComponent implements OnInit, OnDestroy {
 
-  private idCanvas = 'doughnutChart';
+  private canvasId = 'doughnutChart';
   private topic = '/topic/notifications';
+  private subscriptionId = 'taskChartSubscription';
 
   constructor(private taskService: TaskService, private stompService: StompService) {
     this.refreshRenderChart();
@@ -25,12 +26,13 @@ export class TaskChartComponent implements OnInit, OnDestroy {
         title: 'Notification',
         message: message.body
       });
-    });
+    },
+    this.subscriptionId);
   }
 
   ngOnDestroy(): void {
-    this.destroyChart(this.idCanvas);
-    this.stompService.unsubscribe(this.topic);
+    this.destroyChart();
+    this.stompService.unsubscribe(this.subscriptionId);
   }
 
   private refreshRenderChart(): void {
@@ -62,14 +64,14 @@ export class TaskChartComponent implements OnInit, OnDestroy {
           }
         };
 
-        this.destroyChart(this.idCanvas);
-        new Chart(this.idCanvas, config);
+        this.destroyChart();
+        new Chart(this.canvasId, config);
       }
     });
   }
 
-  private destroyChart(idCanvas: string): void {
-    let chartExist = Chart.getChart(idCanvas);
+  private destroyChart(): void {
+    let chartExist = Chart.getChart(this.canvasId);
 
     if (chartExist !== undefined) {
       chartExist.destroy();
